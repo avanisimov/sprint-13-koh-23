@@ -31,7 +31,10 @@ class CatalogItemViewHolder(
         Glide
             .with(binding.root.context)
             .load(viewData.item.imageUrl)
+            .centerCrop()
             .into(binding.image)
+
+
         binding.title.text = viewData.item.name
         binding.price.text = "${viewData.item.price / 100}/${viewData.item.unit}"
 
