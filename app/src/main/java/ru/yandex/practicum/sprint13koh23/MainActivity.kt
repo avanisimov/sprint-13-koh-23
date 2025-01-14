@@ -7,6 +7,8 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -77,7 +79,32 @@ class MainActivity : AppCompatActivity() {
                 }
 
             })
+
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
+
+        // Создаем BadgeDrawable для элемента меню "cart"
+        val badge: BadgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.cart)
+
+        badge.isVisible = false
+
     }
+
+    private fun updateCartBadge() {
+
+        val badge: BadgeDrawable = binding.bottomNavigation.getOrCreateBadge(R.id.cart)
+
+        // Считаем количество уникальных элементов в корзине
+        val uniqueItemCount = cartItems.size
+
+        if (uniqueItemCount > 0) {
+            badge.number = uniqueItemCount
+            badge.isVisible = true
+        } else {
+            badge.isVisible = false
+        }
+    }
+
+
 
     private fun setUpCatalog() {
         binding.catalogItemsList.apply {
@@ -101,6 +128,7 @@ class MainActivity : AppCompatActivity() {
                             )
                         }
                         cartItemsAdapter.setItems(cartItems)
+                        updateCartBadge() // Обновляем бадж после добавления в корзину
                         it.copy(count = 1)
                     } else {
                         it
@@ -108,6 +136,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 catalogItemsAdapter.setItems(catalogItems)
             }
+
             onAddCountClickListener = OnAddCountClickListener { item ->
                 catalogItems = catalogItems.map {
                     if (it.id == item.id) {
@@ -117,7 +146,9 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 catalogItemsAdapter.setItems(catalogItems)
+                updateCartBadge() // Обновляем бадж
             }
+
             onRemoveCountClickListener = OnRemoveCountClickListener { item ->
                 catalogItems = catalogItems.map {
                     if (it.id == item.id) {
@@ -127,7 +158,9 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 catalogItemsAdapter.setItems(catalogItems)
+                updateCartBadge() // Обновляем бадж
             }
+
         }
     }
 
@@ -159,6 +192,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 cartItemsAdapter.setItems(cartItems)
+
             }
         }
     }
