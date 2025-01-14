@@ -33,8 +33,6 @@ class CatalogItemViewHolder(
             .with(binding.root.context)
             .load(viewData.item.imageUrl)
             .centerCrop()
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .skipMemoryCache(true)
             .into(binding.image)
 
 
