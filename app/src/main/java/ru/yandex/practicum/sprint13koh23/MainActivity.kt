@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
                         catalogItems = body.items.map {
                             CatalogItemViewData(
                                 item = it,
-                                count = null
+                                count = 0
                             )
                         }
                         catalogItemsAdapter.setItems(catalogItems)
@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity() {
             onAddCountClickListener = OnAddCountClickListener { item ->
                 catalogItems = catalogItems.map {
                     if (it.id == item.id) {
-                        it.copy(count = (it.count ?: 0) + 1)
+                        it.copy(count = it.count + 1)
                     } else {
                         it
                     }
@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity() {
             onRemoveCountClickListener = OnRemoveCountClickListener { item ->
                 catalogItems = catalogItems.map {
                     if (it.id == item.id) {
-                        it.copy(count = (it.count ?: 0) - 1)
+                        it.copy(count = it.count - 1)
                     } else {
                         it
                     }
