@@ -7,6 +7,8 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -63,7 +65,7 @@ class MainActivity : AppCompatActivity() {
                         catalogItems = body.items.map {
                             CatalogItemViewData(
                                 item = it,
-                                count = null
+                                count = 0
                             )
                         }
                         catalogItemsAdapter.setItems(catalogItems)
@@ -77,7 +79,32 @@ class MainActivity : AppCompatActivity() {
                 }
 
             })
+
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
+
+        // Создаем BadgeDrawable для элемента меню "cart"
+        val badge: BadgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.cart)
+
+        badge.isVisible = false
+
     }
+
+    private fun updateCartBadge() {
+
+        val badge: BadgeDrawable = binding.bottomNavigation.getOrCreateBadge(R.id.cart)
+
+        // Считаем количество уникальных элементов в корзине
+        val uniqueItemCount = cartItems.size
+
+        if (uniqueItemCount > 0) {
+            badge.number = uniqueItemCount
+            badge.isVisible = true
+        } else {
+            badge.isVisible = false
+        }
+    }
+
+
 
     private fun setUpCatalog() {
         binding.catalogItemsList.apply {
@@ -101,6 +128,7 @@ class MainActivity : AppCompatActivity() {
                             )
                         }
                         cartItemsAdapter.setItems(cartItems)
+                        updateCartBadge() // Обновляем бадж после добавления в корзину
                         it.copy(count = 1)
                     } else {
                         it
@@ -108,26 +136,31 @@ class MainActivity : AppCompatActivity() {
                 }
                 catalogItemsAdapter.setItems(catalogItems)
             }
+
             onAddCountClickListener = OnAddCountClickListener { item ->
                 catalogItems = catalogItems.map {
                     if (it.id == item.id) {
-                        it.copy(count = (it.count ?: 0) + 1)
+                        it.copy(count = it.count + 1)
                     } else {
                         it
                     }
                 }
                 catalogItemsAdapter.setItems(catalogItems)
+                updateCartBadge() // Обновляем бадж
             }
+
             onRemoveCountClickListener = OnRemoveCountClickListener { item ->
                 catalogItems = catalogItems.map {
                     if (it.id == item.id) {
-                        it.copy(count = (it.count ?: 0) - 1)
+                        it.copy(count = it.count - 1)
                     } else {
                         it
                     }
                 }
                 catalogItemsAdapter.setItems(catalogItems)
+                updateCartBadge() // Обновляем бадж
             }
+
         }
     }
 
@@ -159,6 +192,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 cartItemsAdapter.setItems(cartItems)
+
             }
         }
     }
@@ -185,11 +219,13 @@ class MainActivity : AppCompatActivity() {
                 ScreenMode.CATALOG -> {
                     binding.catalogContainer.visibility = View.VISIBLE
                     binding.cartContainer.visibility = View.GONE
+                    binding.toolbar.setTitle(R.string.catalog_title)
                 }
 
                 ScreenMode.CART -> {
                     binding.catalogContainer.visibility = View.GONE
                     binding.cartContainer.visibility = View.VISIBLE
+                    binding.toolbar.setTitle(R.string.cart_title)
                 }
             }
             currentScreenMode = newScreenMode

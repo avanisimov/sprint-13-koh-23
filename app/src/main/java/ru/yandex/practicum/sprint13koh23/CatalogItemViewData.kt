@@ -1,5 +1,6 @@
 package ru.yandex.practicum.sprint13koh23
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,7 @@ import ru.yandex.practicum.sprint13koh23.databinding.VCatalogItemBinding
 
 data class CatalogItemViewData(
     val item: CatalogItem,
-    val count: Int?,
+    val count: Int,
 ) {
     val id = item.id
 }
@@ -25,20 +26,27 @@ class CatalogItemViewHolder(
     binding.root
 ) {
 
+    @SuppressLint("SetTextI18n") // Wrong warning
     fun bind(viewData: CatalogItemViewData) {
         binding.root
 
         Glide
             .with(binding.root.context)
             .load(viewData.item.imageUrl)
+            .centerCrop()
             .into(binding.image)
+
+
         binding.title.text = viewData.item.name
         binding.price.text = "${viewData.item.price / 100}/${viewData.item.unit}"
 
-        if (viewData.count != null) {
+        if (viewData.count != 0) {
             binding.addToCart.visibility = View.GONE
             binding.countContainer.visibility = View.VISIBLE
             binding.count.text = viewData.count.toString()
+        } else {
+            binding.addToCart.visibility = View.VISIBLE
+            binding.countContainer.visibility = View.GONE
         }
     }
 
